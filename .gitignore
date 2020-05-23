@@ -870,3 +870,4 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/linux,macos,csharp,windows,intellij,dotnetcore,aspnetcore,intellij+all,visualstudio,visualstudiocode
 
 connectionStrings.json
+appsettings.Local.json
