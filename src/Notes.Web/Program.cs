@@ -56,7 +56,7 @@ namespace Esen.Notes.Web
 			Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					webBuilder.UseStartup<Startup>();
+					webBuilder.UseStartup<Startup>(); 
 				})
 				.ConfigureAppConfiguration((context, config) => config
 					.SetBasePath(context.HostingEnvironment.ContentRootPath)

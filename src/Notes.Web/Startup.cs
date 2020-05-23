@@ -1,16 +1,26 @@
 namespace Esen.Notes.Web
 {
+	using System;
+	using System.IO;
+	using System.Linq;
+
 	using Esen.Notes.Persistence;
 	using Esen.Notes.Persistence.Model.Identity;
 
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Identity;
+	using Microsoft.AspNetCore.ResponseCompression;
 	using Microsoft.EntityFrameworkCore;
 	using Microsoft.EntityFrameworkCore.Diagnostics;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
+	using Microsoft.OpenApi.Models;
+
+	using Serilog;
+
+	using Swashbuckle.AspNetCore.SwaggerUI;
 
 	public sealed class Startup
 	{
@@ -26,9 +36,15 @@ namespace Esen.Notes.Web
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddMvc();
+
 			services.AddRazorPages();
 
-			services.AddMvc();
+			services.AddResponseCompression(opts =>
+			{
+				opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+					new[] { "application/octet-stream" });
+			});
 
 			services.AddDbContext<NotesContext>(options => options
 				.UseNpgsql(
@@ -44,6 +60,17 @@ namespace Esen.Notes.Web
 				.AddEntityFrameworkStores<NotesContext>()
 				.AddDefaultTokenProviders()
 				.AddSignInManager();
+
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "Notes Api", Version = "v1" });
+
+				var filePath = Path.Combine(AppContext.BaseDirectory, $"{typeof(Startup).Assembly.GetName().Name}.xml");
+				c.IncludeXmlComments(filePath);
+
+				c.EnableAnnotations();
+				c.DescribeAllParametersInCamelCase();
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -61,14 +88,42 @@ namespace Esen.Notes.Web
 			}
 
 			app.UseHttpsRedirection();
+			app.UseResponseCompression();
 			app.UseStaticFiles();
 
 			app.UseRouting();
 
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
+			{
+				c.DocumentTitle = "Notes Api";
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Esen - Notes Api v1");
+
+				c.DocExpansion(DocExpansion.None);
+				c.EnableDeepLinking();
+				c.EnableFilter();
+				c.EnableValidator();
+
+				if (!Environment.IsDevelopment())
+				{
+					return;
+				}
+
+				c.DisplayOperationId();
+				c.DisplayRequestDuration();
+			});
+
 			app.UseAuthorization();
+			app.UseSerilogRequestLogging(options => options.EnrichDiagnosticContext =
+				(diagnosticContext, httpContext) =>
+				{
+					diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+					diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+				});
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapControllers();
 				endpoints.MapRazorPages();
 			});
 		}
