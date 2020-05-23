@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Esen.Notes.Persistence
 {
+	using System;
 	using System.Linq;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
