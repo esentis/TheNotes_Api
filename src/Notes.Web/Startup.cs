@@ -1,57 +1,76 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-namespace Notes.Web
+namespace Esen.Notes.Web
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	using Esen.Notes.Persistence;
+	using Esen.Notes.Persistence.Model.Identity;
 
-        public IConfiguration Configuration { get; }
+	using Microsoft.AspNetCore.Builder;
+	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.AspNetCore.Identity;
+	using Microsoft.EntityFrameworkCore;
+	using Microsoft.EntityFrameworkCore.Diagnostics;
+	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Hosting;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRazorPages();
-        }
+	public sealed class Startup
+	{
+		public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+		{
+			Configuration = configuration;
+			Environment = environment;
+		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+		public IConfiguration Configuration { get; }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+		private IWebHostEnvironment Environment { get; }
 
-            app.UseRouting();
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddRazorPages();
 
-            app.UseAuthorization();
+			services.AddMvc();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-            });
-        }
-    }
+			services.AddDbContext<NotesContext>(options => options
+				.UseNpgsql(
+					Configuration.GetConnectionString("NotesDb"),
+					npgsql => npgsql.EnableRetryOnFailure())
+				.EnableDetailedErrors(Environment.IsDevelopment())
+				.EnableSensitiveDataLogging(Environment.IsDevelopment())
+				.ConfigureWarnings(warn => warn
+					.Ignore(CoreEventId.SensitiveDataLoggingEnabledWarning)
+					.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning)));
+
+			services.AddIdentity<NotesUser, NotesRole>()
+				.AddEntityFrameworkStores<NotesContext>()
+				.AddDefaultTokenProviders()
+				.AddSignInManager();
+		}
+
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Error");
+
+				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+				app.UseHsts();
+			}
+
+			app.UseHttpsRedirection();
+			app.UseStaticFiles();
+
+			app.UseRouting();
+
+			app.UseAuthorization();
+
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapRazorPages();
+			});
+		}
+	}
 }
