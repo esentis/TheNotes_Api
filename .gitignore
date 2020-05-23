@@ -868,3 +868,5 @@ $RECYCLE.BIN/
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 
 # End of https://www.gitignore.io/api/linux,macos,csharp,windows,intellij,dotnetcore,aspnetcore,intellij+all,visualstudio,visualstudiocode
+
+connectionStrings.json
