@@ -2,6 +2,15 @@
   "version": 1,
   "dependencies": {
     ".NETStandard,Version=v2.1": {
+      "Kritikos.Configuration.Persistence": {
+        "type": "Direct",
+        "requested": "[0.1.7, )",
+        "resolved": "0.1.7",
+        "contentHash": "k6JlpCU/twiTQ8U7IlehAEOdEtmhYOJ1NvGdKbbRsL8W4tAxZqHcybUwlglwWxA+XppIIvBMqadR5WzJi2hhdw==",
+        "dependencies": {
+          "System.ComponentModel.Annotations": "4.7.0"
+        }
+      },
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
         "type": "Direct",
         "requested": "[3.1.4, )",
