@@ -58,6 +58,15 @@ namespace Esen.Notes.Web
 				{
 					webBuilder.UseStartup<Startup>();
 				})
+				.ConfigureAppConfiguration((context, config) => config
+					.SetBasePath(context.HostingEnvironment.ContentRootPath)
+					.AddJsonFile("appsettings.json", false, true)
+					.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
+					.AddJsonFile("connectionStrings.json", true, true)
+					.AddJsonFile("appsettings.Local.json", true, true)
+					.AddEnvironmentVariables()
+					.AddCommandLine(args)
+				)
 				.UseSerilog();
 
 		private static LoggerConfiguration ApplyStartingConfiguration(this LoggerConfiguration logger)
