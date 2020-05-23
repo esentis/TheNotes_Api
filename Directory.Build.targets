@@ -1,0 +1,18 @@
+<Project>
+	<Target Name="RestoreNpmAssets">
+		<Exec Command="npm install" />
+	</Target>
+
+	<PropertyGroup Label="Conditions">
+		<IsStandard>$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^netstandard\d'))</IsStandard>
+		<IsTest>false</IsTest>
+		<IsTest Condition="$(MSBuildProjectName.ToLowerInvariant().EndsWith('tests'))">True</IsTest>
+		<IsPackable>false</IsPackable>
+		<PackAsTool>false</PackAsTool>
+		<IsPackable Condition="($(IsStandard) OR $(PackAsTool)) AND !$(IsTest)">true</IsPackable>
+	</PropertyGroup>
+
+	<PropertyGroup Label="Package" Condition="$(IsStandard)">
+		<PackageId>Kritikos.$(MSBuildProjectName)</PackageId>
+	</PropertyGroup>
+</Project>
