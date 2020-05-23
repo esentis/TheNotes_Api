@@ -24,7 +24,7 @@ namespace Esen.Notes.Web
 				.ApplyStartingConfiguration()
 				.CreateLogger();
 
-			IHost? host = null;
+			IHost? host;
 			try
 			{
 				host = CreateHostBuilder(args).Build();
