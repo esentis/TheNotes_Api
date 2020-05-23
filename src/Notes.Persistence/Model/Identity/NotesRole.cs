@@ -5,7 +5,7 @@ namespace Esen.Notes.Persistence.Model.Identity
 	using Kritikos.Configuration.Persistence.Abstractions;
 	using Microsoft.AspNetCore.Identity;
 
-	public class NotesRole : IdentityRole<Guid>, ITimestamped, IAuditable
+	public class NotesRole : IdentityRole<Guid>, IEntity<Guid>, ITimestamped, IAuditable
 	{
 		/// <summary>
 		/// Date of creation.
