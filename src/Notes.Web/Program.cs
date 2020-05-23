@@ -65,8 +65,7 @@ namespace Esen.Notes.Web
 					.AddJsonFile("connectionStrings.json", true, true)
 					.AddJsonFile("appsettings.Local.json", true, true)
 					.AddEnvironmentVariables()
-					.AddCommandLine(args)
-				)
+					.AddCommandLine(args))
 				.UseSerilog();
 
 		private static LoggerConfiguration ApplyStartingConfiguration(this LoggerConfiguration logger)
