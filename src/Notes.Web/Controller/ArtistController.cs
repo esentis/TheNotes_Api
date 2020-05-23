@@ -13,15 +13,12 @@ namespace Esen.Notes.Web.Controller
 	using Microsoft.Extensions.Logging;
 
 	[Route("api/artist")]
-	public class ArtistController : BaseController
+	public class ArtistController : BaseController<ArtistController>
 	{
 		public ArtistController(NotesContext ctx, ILogger<ArtistController> logger)
-			: base(ctx)
+			: base(ctx, logger)
 		{
-			Logger = logger;
 		}
-
-		private ILogger<ArtistController> Logger { get; }
 
 		[HttpGet("{id}")]
 		public ActionResult<Artist> RetrieveArtist(long id)
