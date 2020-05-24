@@ -12,6 +12,7 @@ namespace Esen.Notes.Persistence
 	{
 		public static void StampEntities(this ChangeTracker tracker, string user)
 		{
+			return;
 			if (tracker == null)
 			{
 				throw new ArgumentNullException(nameof(tracker));

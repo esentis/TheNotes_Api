@@ -5,6 +5,7 @@ namespace Esen.Notes.Persistence
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using Esen.Notes.Persistence.Model;
 	using Esen.Notes.Persistence.Model.Identity;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
@@ -29,50 +30,6 @@ namespace Esen.Notes.Persistence
 		private ILoggerFactory? LoggerFactory { get; }
 
 		/// <inheritdoc />
-		public override int SaveChanges()
-			=> SaveChanges(true, ApiUser);
-
-		/// <inheritdoc />
-		public override int SaveChanges(bool acceptAllChangesOnSuccess)
-			=> SaveChanges(acceptAllChangesOnSuccess, ApiUser);
-
-		public int SaveChanges(string user)
-			=> SaveChanges(true, user);
-
-		public int SaveChanges(bool acceptAllChangesOnSuccess, string user)
-		{
-			ChangeTracker.StampEntities(user);
-			return SaveChanges(acceptAllChangesOnSuccess);
-		}
-
-		/// <inheritdoc />
-		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
-			SaveChangesAsync(true, ApiUser, cancellationToken);
-
-		/// <inheritdoc />
-		public override Task<int> SaveChangesAsync(
-			bool acceptAllChangesOnSuccess,
-			CancellationToken cancellationToken = default)
-			=> SaveChangesAsync(acceptAllChangesOnSuccess, ApiUser, cancellationToken);
-
-		public Task<int> SaveChangesAsync(
-			string user,
-			CancellationToken cancellationToken = default)
-		{
-			ChangeTracker.StampEntities(user);
-			return SaveChangesAsync(true, cancellationToken);
-		}
-
-		public Task<int> SaveChangesAsync(
-			bool acceptAllChangesOnSuccess,
-			string user,
-			CancellationToken cancellationToken = default)
-		{
-			ChangeTracker.StampEntities(user);
-			return SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-		}
-
-		/// <inheritdoc />
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			if (optionsBuilder == null)
@@ -88,10 +45,16 @@ namespace Esen.Notes.Persistence
 			base.OnConfiguring(optionsBuilder);
 		}
 
+		public DbSet<Artist> Artists { get; set; }
+
+		public DbSet<Album> Albums { get; set; }
+
 		/// <inheritdoc />
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
+			builder.Entity<Artist>(e => e.UseXminAsConcurrencyToken());
+			builder.Entity<Album>(e => e.UseXminAsConcurrencyToken());
 		}
 	}
 }
