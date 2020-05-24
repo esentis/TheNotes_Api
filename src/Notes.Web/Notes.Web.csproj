@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Notes.Persistence\Notes.Persistence.csproj" />
+    <ProjectReference Include="..\Notes.WebModels\Notes.WebModels.csproj" />
   </ItemGroup>
 
 </Project>

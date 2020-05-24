@@ -3,15 +3,17 @@ using System;
 using Esen.Notes.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Esen.Notes.Persistence.Migrations
 {
     [DbContext(typeof(NotesContext))]
-    partial class NotesContextModelSnapshot : ModelSnapshot
+    [Migration("20200524141301_songs-added")]
+    partial class songsadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,9 +208,6 @@ namespace Esen.Notes.Persistence.Migrations
                     b.Property<long?>("AlbumId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ArtistId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("Duration")
                         .HasColumnType("bigint");
 
@@ -235,8 +234,6 @@ namespace Esen.Notes.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlbumId");
-
-                    b.HasIndex("ArtistId");
 
                     b.ToTable("Songs");
                 });
@@ -356,12 +353,6 @@ namespace Esen.Notes.Persistence.Migrations
                     b.HasOne("Esen.Notes.Persistence.Model.Identity.Album", "Album")
                         .WithMany()
                         .HasForeignKey("AlbumId");
-
-                    b.HasOne("Esen.Notes.Persistence.Model.Artist", "Artist")
-                        .WithMany()
-                        .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

@@ -49,12 +49,15 @@ namespace Esen.Notes.Persistence
 
 		public DbSet<Album> Albums { get; set; }
 
+		public DbSet<Song> Songs { get; set; }
+
 		/// <inheritdoc />
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
 			builder.Entity<Artist>(e => e.UseXminAsConcurrencyToken());
 			builder.Entity<Album>(e => e.UseXminAsConcurrencyToken());
+			builder.Entity<Song>(e => e.UseXminAsConcurrencyToken());
 		}
 	}
 }

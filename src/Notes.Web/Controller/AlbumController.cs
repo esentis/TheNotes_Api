@@ -26,10 +26,10 @@ namespace Esen.Notes.Web.Controller
 		}
 
 		[HttpGet("")]
-		public ActionResult<Artist> GetAllAlbums()
+		public ActionResult<Album> GetAllAlbums()
 		{
 
-			var albums = Ctx.Albums.Include(x=>x.Artist).Where(x => true).ToList();
+			var albums = Ctx.Albums.Include(x => x.Artist).Where(x => true).ToList();
 			if (albums == null)
 			{
 				return NotFound("Album was not found");
@@ -39,16 +39,18 @@ namespace Esen.Notes.Web.Controller
 		}
 
 		[HttpGet("{id}")]
-		public ActionResult<Album> RetrieveArtist(long id)
+		public async Task<ActionResult<Album>> RetrieveAlbum(long id)
 		{
 
-			var album = Ctx.Albums.Where(x => x.Id == id).SingleOrDefault();
+			var album = await Ctx.Albums.Include(x => x.Artist).Where(x => x.Id == id).SingleOrDefaultAsync();
 			if (album == null)
 			{
 				return NotFound("Album was not found");
 			}
 
-			return Ok(album);
+			var songs = await Ctx.Songs.Where(x => x.Album == album).Select(x => x.Name).ToListAsync();
+
+			return Ok(songs);
 		}
 
 		[HttpPost("add")]
